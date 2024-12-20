@@ -1,0 +1,158 @@
+\documentclass[aspectratio=169, fontsize=18pt]{beamer}
+\beamertemplatenavigationsymbolsempty
+\usepackage[utf8]{inputenc}
+\usepackage[english, russian]{babel}
+\usepackage{mathptmx}
+\usepackage{latexsym,amsmath,xcolor,multicol,booktabs,calligra}
+\usepackage{graphicx,pstricks,listings,stackengine}
+
+\definecolor{msublue}{RGB}{0, 56, 116}
+\definecolor{msuyellow}{RGB}{167, 131, 55}
+\definecolor{msugray}{RGB}{128, 128, 128}
+\definecolor{msured}{RGB}{128, 0, 0}
+
+\setbeamerfont{title}{size=\Large}
+\setbeamerfont{normal text}{size=\large}
+\setbeamerfont{author}{size=\large}
+\setbeamerfont{institute}{size=\large}
+\setbeamerfont{footline}{size=\large}
+
+
+\setbeamercolor{frametitle}{bg=msublue,fg=white}
+\setbeamercolor{title}{bg=msublue,fg=white}
+
+\setbeamertemplate{footline}[frame number]
+
+\setbeamertemplate{itemize item}{\color{msublue}\scalebox{1.5}{\raisebox{-0.1ex}{\tiny\textbullet}}}
+
+\addtobeamertemplate{footline}{
+    \ifnum\insertframenumber>1 
+        \begin{picture}(0,0)
+            \put(229,0){\includegraphics[width=0.6cm]{png/logo_vmk.png}}
+    \end{picture}
+    \fi
+}
+
+
+\begin{document}
+\title{Исследование и разработка системы ответов к изменениям программного кода}
+
+\author{Хайруллина Алина, ВМК МГУ\\
+  }
+\institute{Бакалавриат, 3 курс\\
+        Научный консультант: Марков С.И.\\}
+
+\date{19 Ноября 2024}
+
+%1 слайд
+\begin{frame}
+\titlepage
+
+    \begin{figure}[htpb]
+        \begin{center}
+            \includegraphics[keepaspectratio, scale=0.08]{png/logo_vmk.png}
+        \end{center}
+    \end{figure}
+\end{frame}
+
+%2слайд
+\begin{frame}{Рецензирование кода (Code review)}
+
+\textbf{Рецензирование кода} — обязательный процесс проверки кода другим
+человеком перед его публикацией. В рецензировании участвуют все
+разработчики, что повышает качество и читаемость кода, а также
+обучаемость сотрудников.
+
+\begin{block}{Вопросы у рецензента могут возникать по разным причинам:}
+    \begin{itemize}
+			\item {незнание определенных библиотек}
+			\item различие стиля программирования
+			\item отсутствие документации к коду
+                \item отсутствие комментариев к коду
+\end{itemize}
+\end{block}
+\end{frame}
+
+%3 слайд
+\begin{frame}{Примеры диалогов}
+
+\begin{block}{ }
+    \textcolor{msured}{Q:} Зачем вы заменили цикл по элементам листа для генерации форматной строчки на join()?\\
+    \textcolor{msuyellow}{A:} \textcolor{msugray}{join работает эффективней, исключает полное копирование строки на каждой итерации}\\
+
+\end{block}
+
+\begin{block}{ }
+    \textcolor{msured}{Q:} Почему удалена проверка на None после вызова process boxes?\\
+
+    \textcolor{msuyellow}{A:} \textcolor{msugray}{Метод process boxes никогда не возвращает None, будет пустой список при отсутсвии данных}
+
+\end{block}
+
+\begin{block}{ }
+    \textcolor{msured}{Q:} Почему raise exception вместо return exit code?\\
+
+    \textcolor{msuyellow}{A:} \textcolor{msugray}{В данном модуле принято обрабатывать ошибки при помощи исключений}
+
+    
+\end{block}
+    
+\end{frame}
+
+%4 слайд
+\begin{frame}{Постановка задачи}
+\begin{block}{Цель:}
+    \begin{itemize}
+        \item Настроить большую языковую модель \textbf{(LLM)}, которая будет отвечать на вопросы рецензентов к исходному коду с приемлемой точностью с использованием системы \textbf{Retrieval-Augmented Generation (RAG)}
+    \end{itemize}
+\end{block}
+\begin{block}{Задачи:}
+    \begin{itemize}
+        \item Выбрать классы вопросов, на которые будет отвечать модель
+        \item Подготовка исторических данных о проекте для использования в RAG
+        \item Настройка большой языковой модели на основе собранных данных для ответа на вопросы программистов
+        \item Протестировать и оценить LLM с использованием RAG
+    \end{itemize}
+\end{block}
+\end{frame}
+
+%5 слайд
+\begin{frame}{Актуальность темы}
+\begin{block}{Система автоматических ответов поможет:}
+    \begin{itemize}
+        \item Быстрые ответы\\
+        \textcolor{msugray}{Первые эксперименты на системе code review показали, что среднее время на ответ составляет 6.5 часов, с моделью его можно сократить до 2-3 минут}
+        \item Сокращение реакции при вопросе к новой версии исходного кода
+        \item Исходный код быстрее попадает в репозиторий
+    \end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{План работы}
+\begin{block}{ноябрь - декабрь}
+    \begin{itemize}
+        \item Исследование существующих решений по теме 
+        \item Сбор базы данных для RAG с существующими вопросами, ответами и исправлениями
+        \item Разработка функции схожести запросов в RAG
+    \end{itemize}
+\end{block}
+
+\begin{block}{февраль-март}
+    \begin{itemize}
+        \item Зафиксировать тестовую выборку
+        \item Разработать функцию оценки результатов
+        \item Сбор результатов
+    \end{itemize}
+\end{block}
+
+\begin{block}{апрель - май}
+    \begin{itemize}
+        \item Оформление текста курсовой работы
+    \end{itemize}
+\end{block}
+
+\end{frame}
+
+
+
+\end{document}
